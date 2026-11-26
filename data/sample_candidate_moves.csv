@@ -1,0 +1,7 @@
+from_company,to_company,role_title,department,seniority,move_date,location,notes
+FE Credit,Techcombank,Head of Credit Risk Analytics,Risk & Credit,DIRECTOR_HEAD,2026-11-12,Ho Chi Minh City,Retail credit analytics leadership move
+Shopee Vietnam,MoMo,Staff Backend Engineer,Engineering,PRINCIPAL_STAFF,2026-11-08,Ho Chi Minh City,Core payments ledger platform
+Home Credit Vietnam,VIB,VP Digital Lending Product,Product,VP,2026-11-04,Ho Chi Minh City,Consumer lending digital squad
+FPT Software,NAB Innovation Centre Vietnam,Principal Cloud Architect,Engineering,PRINCIPAL_STAFF,2026-10-29,Ho Chi Minh City,Enterprise AWS migration
+VPBank,Cake by VPBank,Director of AI & Data Science,Data & AI,DIRECTOR_HEAD,2026-10-22,Hanoi,Internal ecosystem transfer to digital bank
+Mcredit,HD SAISON,Senior Collections Strategy Manager,Operations & Collections,SENIOR_MANAGER,2026-10-18,Ho Chi Minh City,Digital collections automation
