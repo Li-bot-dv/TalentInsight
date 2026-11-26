@@ -15,12 +15,13 @@ export interface CrawlerStatusDataset {
 }
 
 const CRAWLER_SOURCES = [
-  { key: "topdev", name: "TopDev Vietnam", desc: "Public VN tech job board API (v2)" },
-  { key: "vietnamworks", name: "VietnamWorks", desc: "Major VN banking, CFC & tech job board" },
-  { key: "itviec", name: "ITviec", desc: "Senior Vietnam engineering & product listings" },
+  { key: "company_ats", name: "Company Career Sites / ATS", desc: "Bosch & Grab SmartRecruiters, VNG Careers, Greenhouse, Lever" },
+  { key: "vietnamworks", name: "VietnamWorks", desc: "Major VN banking, CFC & tech job board API" },
   { key: "careerviet", name: "CareerViet", desc: "Commercial banking & consumer finance listings" },
-  { key: "company_ats", name: "Company Career Sites / ATS", desc: "Greenhouse, Lever & JSON-LD career portals" },
-  { key: "vn_news_rss", name: "VN Finance & Tech RSS", desc: "VnExpress & CafeF company movement detector" },
+  { key: "careerlink", name: "CareerLink VN", desc: "Open Vietnam job board (no Cloudflare gate)" },
+  { key: "topdev", name: "TopDev Vietnam", desc: "Public VN tech job board API (v2)" },
+  { key: "vn_news_rss", name: "VN Finance & Tech RSS", desc: "VnExpress, CafeF, CafeBiz & Google News VN RSS" },
+  { key: "itviec", name: "ITviec", desc: "Cloudflare-protected (logged transparently if 403)" },
 ];
 
 export default function CrawlersView({

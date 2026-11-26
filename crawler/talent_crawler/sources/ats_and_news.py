@@ -29,9 +29,10 @@ BROWSER_HEADERS = {
 
 
 class CompanyATSAdapter(BaseSourceAdapter):
-    """Crawls direct company career sites via Greenhouse/Lever public APIs or structured career HTML."""
+    """Crawls direct company career sites via SmartRecruiters, VNG Careers, Greenhouse, Lever, or JSON-LD."""
 
     source_name = "company_ats"
+    rate_limit_seconds = 0.25
 
     def crawl(self, companies: list[dict[str, Any]]) -> CrawlBatchResult:
         result = CrawlBatchResult(source=self.source_name)
@@ -44,9 +45,98 @@ class CompanyATSAdapter(BaseSourceAdapter):
                 token = (comp.get("ats_board_token") or "").strip()
                 if not careers_url and not token:
                     continue
+                if ats_type not in ("smartrecruiters", "vng_next", "greenhouse", "lever"):
+                    continue
                 result.companies_scanned += 1
                 try:
-                    if ats_type == "greenhouse" and token:
+                    if ats_type == "smartrecruiters" and token:
+                        offset = 0
+                        limit = 100
+                        while offset < 300:
+                            self._polite_wait()
+                            resp = client.get(
+                                f"https://api.smartrecruiters.com/v1/companies/{token}/postings",
+                                params={"country": "vn", "limit": limit, "offset": offset},
+                            )
+                            resp.raise_for_status()
+                            payload = resp.json()
+                            items = payload.get("content") or []
+                            if not items:
+                                break
+                            for item in items:
+                                title = (item.get("name") or "").strip()
+                                if not title:
+                                    continue
+                                seniority, is_senior = classify_seniority(title)
+                                dept_label = ((item.get("department") or {}).get("label") or "")
+                                department = classify_department(f"{title} {dept_label}")
+                                loc_obj = item.get("location") or {}
+                                raw_loc = loc_obj.get("city") or loc_obj.get("fullLocation") or ""
+                                location = normalize_location(raw_loc, default=comp.get("hq_city", "Ho Chi Minh City"))
+                                pid = str(item.get("id") or "")
+                                url = f"https://jobs.smartrecruiters.com/{token}/{pid}" if pid else careers_url
+                                posted = str(item.get("releasedDate") or today)[:10]
+                                result.jobs.append(
+                                    CrawledJob(
+                                        company_id=comp["id"],
+                                        external_id=pid or make_external_id(self.source_name, comp["slug"], title, url),
+                                        source=self.source_name,
+                                        title=title,
+                                        department=department,
+                                        seniority=seniority,
+                                        is_senior=is_senior,
+                                        location=location,
+                                        url=url,
+                                        posted_date=posted,
+                                    )
+                                )
+                            total_found = int(payload.get("totalFound") or 0)
+                            offset += limit
+                            if offset >= total_found:
+                                break
+                    elif ats_type == "vng_next":
+                        base = careers_url or "https://career.vng.com.vn/co-hoi-nghe-nghiep"
+                        page = 1
+                        max_pages = 10
+                        while page <= max_pages:
+                            self._polite_wait()
+                            resp = client.get(base, params={"page": page})
+                            resp.raise_for_status()
+                            soup = BeautifulSoup(resp.text, "lxml")
+                            nd = soup.find("script", id="__NEXT_DATA__")
+                            if not nd or not nd.string:
+                                break
+                            pp = json.loads(nd.string).get("props", {}).get("pageProps", {})
+                            jobs_list = pp.get("jobs") or []
+                            max_pages = min(15, int(pp.get("pages") or 1))
+                            if not jobs_list:
+                                break
+                            for item in jobs_list:
+                                title = (item.get("title") or "").strip()
+                                if not title:
+                                    continue
+                                seniority, is_senior = classify_seniority(title)
+                                family = str(item.get("job_family") or "")
+                                department = classify_department(f"{title} {family}")
+                                location = normalize_location(str(item.get("location") or ""), default="Ho Chi Minh City")
+                                slug = item.get("slug") or ""
+                                url = f"https://career.vng.com.vn/co-hoi-nghe-nghiep/{slug}" if slug else base
+                                result.jobs.append(
+                                    CrawledJob(
+                                        company_id=comp["id"],
+                                        external_id=str(item.get("job_id") or make_external_id(self.source_name, comp["slug"], title, url)),
+                                        source=self.source_name,
+                                        title=title,
+                                        department=department,
+                                        seniority=seniority,
+                                        is_senior=is_senior,
+                                        location=location,
+                                        url=url,
+                                        posted_date=today,
+                                    )
+                                )
+                            page += 1
+                    elif ats_type == "greenhouse" and token:
                         resp = self.fetch(client, f"https://boards-api.greenhouse.io/v1/boards/{token}/jobs")
                         for item in resp.json().get("jobs", []):
                             title = (item.get("title") or "").strip()
@@ -92,36 +182,6 @@ class CompanyATSAdapter(BaseSourceAdapter):
                                     posted_date=today,
                                 )
                             )
-                    elif careers_url:
-                        resp = self.fetch(client, careers_url)
-                        soup = BeautifulSoup(resp.text, "lxml")
-                        for script in soup.find_all("script", type="application/ld+json"):
-                            try:
-                                data = json.loads(script.string or "")
-                            except json.JSONDecodeError:
-                                continue
-                            nodes = data if isinstance(data, list) else [data]
-                            for node in nodes:
-                                if isinstance(node, dict) and node.get("@type") == "JobPosting":
-                                    title = (node.get("title") or "").strip()
-                                    if not title:
-                                        continue
-                                    seniority, is_senior = classify_seniority(title)
-                                    department = classify_department(title)
-                                    result.jobs.append(
-                                        CrawledJob(
-                                            company_id=comp["id"],
-                                            external_id=make_external_id(self.source_name, comp["slug"], title, careers_url),
-                                            source=self.source_name,
-                                            title=title,
-                                            department=department,
-                                            seniority=seniority,
-                                            is_senior=is_senior,
-                                            location=comp.get("hq_city", "Ho Chi Minh City"),
-                                            url=node.get("url") or careers_url,
-                                            posted_date=str(node.get("datePosted") or today)[:10],
-                                        )
-                                    )
                 except AntiBotBlockedError as exc:
                     result.errors.append(f"{comp['short_name']}: {exc}")
                 except Exception as exc:

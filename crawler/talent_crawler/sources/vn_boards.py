@@ -338,6 +338,81 @@ class CareerVietAdapter(BaseSourceAdapter):
         return result
 
 
+class CareerLinkAdapter(BaseSourceAdapter):
+    """Public CareerLink Vietnam open job board adapter."""
+
+    source_name = "careerlink"
+    rate_limit_seconds = 0.25
+    BASE_URL = "https://www.careerlink.vn"
+
+    def crawl(self, companies: list[dict[str, Any]]) -> CrawlBatchResult:
+        result = CrawlBatchResult(source=self.source_name)
+        today = date.today().isoformat()
+
+        with httpx.Client(headers=BROWSER_HEADERS, timeout=self.timeout, follow_redirects=True) as client:
+            for comp in companies:
+                result.companies_scanned += 1
+                query = comp.get("short_name") or comp["name"]
+                try:
+                    self._polite_wait()
+                    resp = client.get(
+                        f"{self.BASE_URL}/vieclam/list",
+                        params={"keyword_use": "A", "keyword": query},
+                    )
+                    if resp.status_code in (403, 429):
+                        raise AntiBotBlockedError(f"CareerLink returned HTTP {resp.status_code}")
+                    resp.raise_for_status()
+                    soup = BeautifulSoup(resp.text, "lxml")
+                    seen: set[str] = set()
+                    for link in soup.select("a[href*='/tim-viec-lam/']"):
+                        parent = link.find_parent("li") or link.find_parent("div", class_=True)
+                        if not parent:
+                            continue
+                        emp_el = parent.select_one("a[href*='/viec-lam-cua/']")
+                        if not emp_el:
+                            continue
+                        if not _match_company(emp_el.get_text(" ", strip=True), comp):
+                            continue
+                        href = urljoin(self.BASE_URL, link.get("href", ""))
+                        if href in seen:
+                            continue
+                        seen.add(href)
+                        title = re.sub(r"^(Mới|Hot)\s+", "", link.get_text(" ", strip=True), flags=re.I).strip()
+                        if len(title) < 4:
+                            continue
+                        card_text = parent.get_text(" ", strip=True)
+                        sal_min, sal_max = _parse_salary_trieu(card_text)
+                        location = normalize_location(card_text, default=comp.get("hq_city", "Ho Chi Minh City"))
+                        seniority, is_senior = classify_seniority(title)
+                        department = classify_department(title)
+                        result.jobs.append(
+                            CrawledJob(
+                                company_id=comp["id"],
+                                external_id=make_external_id(self.source_name, comp["slug"], title, href),
+                                source=self.source_name,
+                                title=title,
+                                department=department,
+                                seniority=seniority,
+                                is_senior=is_senior,
+                                location=location,
+                                url=href,
+                                posted_date=today,
+                                salary_min_vnd=sal_min,
+                                salary_max_vnd=sal_max,
+                            )
+                        )
+                except AntiBotBlockedError as exc:
+                    result.status = "BLOCKED_ANTIBOT"
+                    result.errors.append(str(exc))
+                    break
+                except Exception as exc:
+                    result.errors.append(f"{comp['short_name']}: {exc}")
+
+        if result.errors and result.status == "COMPLETED":
+            result.status = "PARTIAL" if result.jobs else "FAILED"
+        return result
+
+
 class ITviecAdapter(BaseSourceAdapter):
     """Public ITviec listing adapter (transparently reports Cloudflare anti-bot blocks)."""
 

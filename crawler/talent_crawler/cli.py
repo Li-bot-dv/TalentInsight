@@ -157,7 +157,7 @@ def main(argv: list[str] | None = None) -> int:
     p_live = sub.add_parser("init-live", help="Wipe seed data and populate 100% live-crawled Vietnam market data")
     p_live.add_argument(
         "--source",
-        default="vietnamworks,topdev,careerviet,vn_news_rss,itviec",
+        default="company_ats,vietnamworks,topdev,careerviet,careerlink,vn_news_rss,itviec",
         help="Comma-separated live sources to crawl",
     )
 

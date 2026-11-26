@@ -68,11 +68,12 @@ export const IMPACT_META: Record<ImpactPolarity, { label: string; bg: string; te
 };
 
 export const SOURCE_LABELS: Record<string, string> = {
+  company_ats: "Company Career Site / ATS",
   topdev: "TopDev",
   itviec: "ITviec",
   vietnamworks: "VietnamWorks",
   careerviet: "CareerViet",
-  company_ats: "Company Career Site",
+  careerlink: "CareerLink VN",
   vn_news_rss: "VN News RSS",
   csv_import: "CSV Import",
   seed: "Market Baseline",

@@ -9,11 +9,12 @@ const execFileAsync = promisify(execFile);
 
 const ALLOWED_SOURCES = new Set([
   "all",
+  "company_ats",
   "topdev",
   "itviec",
   "vietnamworks",
   "careerviet",
-  "company_ats",
+  "careerlink",
   "vn_news_rss",
 ]);
 
