@@ -16,6 +16,19 @@ export default function TalentFlowDiagram({ edges }: { edges: SectorFlowEdge[] }
     (e) => ["TECH", "CFC", "BANKING"].includes(e.from_sector) && ["TECH", "CFC", "BANKING"].includes(e.to_sector)
   );
 
+  if (filtered.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed border-[#d3cec2] bg-[#faf9f6] p-8 text-center">
+        <p className="text-sm font-semibold text-[#14171a]">No candidate transitions imported yet</p>
+        <p className="mt-1 text-xs text-[#646d78] max-w-md mx-auto">
+          Public Vietnam job boards do not publish individual job-change histories. Click{" "}
+          <strong>Import CSV Moves</strong> to upload your LinkedIn Talent Insights exports or headhunter placement
+          logs to populate the cross-sector migration matrix.
+        </p>
+      </div>
+    );
+  }
+
   const outTotals: Record<string, number> = { TECH: 0, CFC: 0, BANKING: 0 };
   const inTotals: Record<string, number> = { TECH: 0, CFC: 0, BANKING: 0 };
   for (const e of filtered) {

@@ -29,7 +29,10 @@ Market & talent intelligence platform focused on **Vietnam's Tech, Consumer Fina
 python3 -m venv .venv
 .venv/bin/pip install -r crawler/requirements.txt
 
-# Seed Top 30 Vietnam Tech/CFC/Banking baseline (16 weeks of snapshots, jobs, flows, movements)
+# Populate 100% LIVE-crawled Vietnam jobs & news movements (VietnamWorks, TopDev, CareerViet, VN News RSS)
+PYTHONPATH=crawler .venv/bin/python -m talent_crawler.cli init-live
+
+# Or seed a 16-week demo baseline (optional)
 PYTHONPATH=crawler .venv/bin/python -m talent_crawler.cli seed --reset
 
 # Run unit tests

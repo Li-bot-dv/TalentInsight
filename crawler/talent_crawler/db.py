@@ -217,6 +217,94 @@ def recompute_latest_snapshots(conn: sqlite3.Connection, ref_date: date | None =
     return updated
 
 
+def rebuild_snapshots_from_live_jobs(conn: sqlite3.Connection, weeks: int = 8, ref_date: date | None = None) -> int:
+    """Build weekly hiring snapshots strictly from real crawled job_postings timestamps."""
+    today = ref_date or date.today()
+    current_monday = today - timedelta(days=today.weekday())
+    companies = conn.execute("SELECT id FROM companies WHERE is_active = 1").fetchall()
+    conn.execute("DELETE FROM hiring_snapshots")
+    written = 0
+
+    for comp in companies:
+        cid = comp["id"]
+        rows = conn.execute(
+            """
+            SELECT posted_date, is_senior, department
+            FROM job_postings
+            WHERE company_id = ? AND status = 'ACTIVE'
+            """,
+            (cid,),
+        ).fetchall()
+
+        weekly_active: list[int] = []
+        weekly_new: list[int] = []
+        weekly_senior: list[int] = []
+        weekly_tech: list[int] = []
+        week_starts: list[date] = []
+
+        for offset in range(weeks - 1, -1, -1):
+            wk_start = current_monday - timedelta(days=7 * offset)
+            wk_end = wk_start + timedelta(days=6)
+            ws_iso = wk_start.isoformat()
+            we_iso = wk_end.isoformat()
+            week_starts.append(wk_start)
+
+            # Jobs already posted on or before this week's end represent live cumulative pipeline
+            cum_rows = [r for r in rows if (r["posted_date"] or "") <= we_iso]
+            new_rows = [r for r in rows if ws_iso <= (r["posted_date"] or "") <= we_iso]
+            weekly_active.append(len(cum_rows))
+            weekly_new.append(len(new_rows))
+            weekly_senior.append(sum(1 for r in cum_rows if r["is_senior"]))
+            weekly_tech.append(sum(1 for r in cum_rows if r["department"] in ("Engineering", "Data & AI", "Product")))
+
+        for idx, wk_start in enumerate(week_starts):
+            active = weekly_active[idx]
+            new_n = weekly_new[idx]
+            prev_new = weekly_new[idx - 1] if idx > 0 else new_n
+            # Compare recent 2-week posting velocity vs prior 2-week posting velocity for real momentum
+            recent_2w = weekly_new[idx] + (weekly_new[idx - 1] if idx >= 1 else 0)
+            prior_2w = (weekly_new[idx - 2] if idx >= 2 else 0) + (weekly_new[idx - 3] if idx >= 3 else 0)
+
+            if prev_new > 0:
+                wow = round(((new_n - prev_new) / prev_new) * 100.0, 1)
+            elif new_n > 0:
+                wow = 100.0
+            else:
+                wow = 0.0
+
+            if prior_2w > 0:
+                mom = round(((recent_2w - prior_2w) / prior_2w) * 100.0, 1)
+            elif recent_2w > 0:
+                mom = round(min(100.0, recent_2w * 15.0), 1)
+            else:
+                mom = -100.0 if active == 0 else 0.0
+
+            status = classify_velocity_status(active, mom)
+            conn.execute(
+                """
+                INSERT INTO hiring_snapshots (
+                    company_id, snapshot_week, active_jobs, new_jobs, closed_jobs,
+                    senior_jobs, tech_jobs, wow_change_pct, mom_change_pct, velocity_status
+                ) VALUES (?, ?, ?, ?, 0, ?, ?, ?, ?, ?)
+                """,
+                (
+                    cid,
+                    wk_start.isoformat(),
+                    active,
+                    new_n,
+                    weekly_senior[idx],
+                    weekly_tech[idx],
+                    wow,
+                    mom,
+                    status,
+                ),
+            )
+            written += 1
+
+    conn.commit()
+    return written
+
+
 def start_crawl_run(conn: sqlite3.Connection, source: str) -> int:
     cur = conn.execute(
         "INSERT INTO crawl_runs (source, status, started_at) VALUES (?, 'RUNNING', ?)",

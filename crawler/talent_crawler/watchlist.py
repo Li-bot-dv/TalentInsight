@@ -18,7 +18,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://career.vng.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["VNG", "VNG Corporation", "Zalo", "ZaloPay", "VNG Cloud"],
+        "search_keywords": ["VNG", "VNG Corporation", "Công ty Cổ phần VNG", "Zalo", "ZaloPay", "VNG Cloud", "VNGGames"],
     },
     {
         "slug": "fpt-software",
@@ -32,7 +32,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://career.fpt-software.com",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["FPT Software", "FPT Smart Cloud", "FPT AI"],
+        "search_keywords": ["FPT Software", "FPT Smart Cloud", "FPT IS", "FPT Information System", "Tập đoàn FPT"],
     },
     {
         "slug": "momo-mservice",
@@ -46,7 +46,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://momo.careers",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["MoMo", "M_Service", "Ví MoMo"],
+        "search_keywords": ["MoMo", "M_Service", "M-Service", "Ví MoMo", "Dịch vụ Di động Trực tuyến"],
     },
     {
         "slug": "grab-vietnam",
@@ -60,7 +60,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://grab.careers",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Grab", "Grab Vietnam", "GrabTech"],
+        "search_keywords": ["Grab", "Grab Vietnam", "Grab Việt Nam", "GrabTaxi"],
     },
     {
         "slug": "shopee-vietnam",
@@ -74,7 +74,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://careers.shopee.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Shopee", "Shopee Vietnam", "ShopeePay", "SeaMoney"],
+        "search_keywords": ["Shopee", "Shopee Vietnam", "Shopee Việt Nam", "ShopeePay", "SeaMoney", "SPX Express"],
     },
     {
         "slug": "vnpay",
@@ -88,7 +88,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://tuyendung.vnpay.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["VNPAY", "VNPay"],
+        "search_keywords": ["VNPAY", "VNPay", "Giải pháp Thanh toán Việt Nam"],
     },
     {
         "slug": "nab-innovation-centre-vietnam",
@@ -116,7 +116,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://careers.bosch.com",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Bosch Global Software", "Bosch Vietnam", "BGSV"],
+        "search_keywords": ["Bosch Global Software", "Bosch Vietnam", "Bosch Việt Nam", "BGSV", "Robert Bosch"],
     },
     {
         "slug": "cake-by-vpbank",
@@ -130,7 +130,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://cake.vn/careers",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Cake by VPBank", "Cake Digital Bank", "Be Group"],
+        "search_keywords": ["Cake by VPBank", "Cake Digital Bank", "Be Group", "BeFinancial"],
     },
     {
         "slug": "viettel-digital",
@@ -144,7 +144,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://tuyendung.viettel.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Viettel Digital", "Viettel Money", "Viettel Solutions"],
+        "search_keywords": ["Viettel Digital", "Viettel Money", "Viettel Solutions", "Dịch vụ số Viettel", "Tập đoàn Viettel"],
     },
     # ─────────────────────────── CFC / CONSUMER FINANCE (10) ───────────────────────────
     {
@@ -156,10 +156,10 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "hq_city": "Ho Chi Minh City",
         "headcount_band": "10,000+",
         "website_url": "https://fecredit.com.vn",
-        "careers_url": "https://careers.fecredit.com.vn",
+        "careers_url": "https://fecredit.com.vn/tuyen-dung",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["FE Credit", "VPBank SMBC", "FECredit"],
+        "search_keywords": ["FE Credit", "VPBank SMBC", "FECredit", "VPB SMBC FC"],
     },
     {
         "slug": "home-credit-vietnam",
@@ -170,10 +170,10 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "hq_city": "Ho Chi Minh City",
         "headcount_band": "5,000-7,000",
         "website_url": "https://www.homecredit.vn",
-        "careers_url": "https://careers.homecredit.vn",
+        "careers_url": "https://www.homecredit.vn/tuyen-dung",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Home Credit", "Home Credit Vietnam"],
+        "search_keywords": ["Home Credit", "Home Credit Vietnam", "Home Credit Việt Nam"],
     },
     {
         "slug": "hd-saison",
@@ -187,7 +187,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://www.hdsaison.com.vn/tuyen-dung",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["HD SAISON", "HDSAISON"],
+        "search_keywords": ["HD SAISON", "HDSAISON", "HD Saison"],
     },
     {
         "slug": "mcredit",
@@ -201,7 +201,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://tuyendung.mcredit.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Mcredit", "MB Shinsei"],
+        "search_keywords": ["Mcredit", "MB Shinsei", "Tài chính TNHH MB Shinsei"],
     },
     {
         "slug": "mirae-asset-finance-vietnam",
@@ -215,7 +215,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://mafc.com.vn/tuyen-dung",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Mirae Asset Finance", "MAFC"],
+        "search_keywords": ["Mirae Asset Finance", "MAFC", "Mirae Asset Việt Nam"],
     },
     {
         "slug": "shinhan-finance-vietnam",
@@ -229,7 +229,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://shinhanfinance.com.vn/tuyen-dung",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Shinhan Finance", "SVFC"],
+        "search_keywords": ["Shinhan Finance", "SVFC", "Tài chính Shinhan"],
     },
     {
         "slug": "lotte-finance-vietnam",
@@ -243,7 +243,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://www.lottefinance.vn/web/company/career",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Lotte Finance", "Lotte Card Vietnam"],
+        "search_keywords": ["Lotte Finance", "LOTTE Finance", "Lotte Card Vietnam"],
     },
     {
         "slug": "shb-finance",
@@ -257,7 +257,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://tuyendung.shbfinance.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["SHBFinance", "SHB Finance"],
+        "search_keywords": ["SHBFinance", "SHB Finance", "Tài chính Ngân hàng Sài Gòn - Hà Nội"],
     },
     {
         "slug": "f88",
@@ -271,7 +271,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://tuyendung.f88.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["F88", "F88 Financial"],
+        "search_keywords": ["F88", "F88 Financial", "Công ty Cổ phần Kinh doanh F88"],
     },
     {
         "slug": "vietcredit",
@@ -285,7 +285,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://www.vietcredit.vn/tuyen-dung",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["VietCredit", "TinViet Finance"],
+        "search_keywords": ["VietCredit", "TinViet Finance", "Tài chính Cổ phần Tín Việt"],
     },
     # ─────────────────────────── BANKING (10) ───────────────────────────
     {
@@ -300,7 +300,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://jobs.techcombank.com",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Techcombank", "TCB", "Techcom Securities", "TCBS"],
+        "search_keywords": ["Techcombank", "Kỹ Thương Việt Nam", "Techcom Securities", "TCBS"],
     },
     {
         "slug": "vpbank",
@@ -314,7 +314,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://tuyendung.vpbank.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["VPBank", "VPB"],
+        "search_keywords": ["VPBank", "Việt Nam Thịnh Vượng", "VPBankS"],
     },
     {
         "slug": "vib-bank",
@@ -328,7 +328,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://careers.vib.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["VIB", "Vietnam International Bank"],
+        "search_keywords": ["VIB", "Vietnam International Bank", "Ngân hàng Quốc Tế"],
     },
     {
         "slug": "mb-bank",
@@ -342,7 +342,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://tuyendung.mbbank.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["MB Bank", "MBBank", "Ngân hàng Quân đội"],
+        "search_keywords": ["MB Bank", "MBBank", "Ngân hàng Quân đội", "TMCP Quân Đội", "MB AMC"],
     },
     {
         "slug": "vietcombank",
@@ -356,7 +356,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://tuyendung.vietcombank.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["Vietcombank", "VCB"],
+        "search_keywords": ["Vietcombank", "Ngoại thương Việt Nam"],
     },
     {
         "slug": "acb-bank",
@@ -370,7 +370,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://acbjobs.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["ACB", "Asia Commercial Bank", "Ngân hàng Á Châu"],
+        "search_keywords": ["ACB", "Asia Commercial Bank", "Ngân hàng Á Châu", "TMCP Á Châu"],
     },
     {
         "slug": "tpbank",
@@ -384,7 +384,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://tuyendung.tpb.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["TPBank", "Tien Phong Bank"],
+        "search_keywords": ["TPBank", "Tien Phong Bank", "Ngân hàng Tiên Phong", "TMCP Tiên Phong"],
     },
     {
         "slug": "hdbank",
@@ -398,7 +398,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://career.hdbank.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["HDBank", "HD Bank"],
+        "search_keywords": ["HDBank", "HD Bank", "Phát triển TP. Hồ Chí Minh", "Phát triển TP.HCM"],
     },
     {
         "slug": "bidv",
@@ -412,7 +412,7 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://tuyendung.bidv.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["BIDV"],
+        "search_keywords": ["BIDV", "Đầu tư và Phát triển Việt Nam"],
     },
     {
         "slug": "msb-bank",
@@ -426,6 +426,6 @@ VIETNAM_WATCHLIST: list[dict[str, Any]] = [
         "careers_url": "https://jobs.msb.com.vn",
         "ats_type": "custom",
         "ats_board_token": "",
-        "search_keywords": ["MSB", "Maritime Bank", "TNEX"],
+        "search_keywords": ["MSB", "Maritime Bank", "Hàng Hải Việt Nam", "TNEX"],
     },
 ]

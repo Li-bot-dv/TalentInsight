@@ -12,16 +12,24 @@ from .db import (
     finish_crawl_run,
     get_connection,
     init_db,
+    rebuild_snapshots_from_live_jobs,
     recompute_latest_snapshots,
     start_crawl_run,
+    upsert_company,
     upsert_job,
 )
 from .importers import import_candidate_moves_csv
 from .seed import seed_database
 from .sources import SOURCE_REGISTRY
+from .watchlist import VIETNAM_WATCHLIST
 
 
-def run_crawl(db_path: Path, sources: list[str], limit_companies: int | None = None) -> list[dict]:
+def run_crawl(
+    db_path: Path,
+    sources: list[str],
+    limit_companies: int | None = None,
+    rebuild_history: bool = False,
+) -> list[dict]:
     conn = get_connection(db_path)
     init_db(conn)
     query = "SELECT * FROM companies WHERE is_active = 1 ORDER BY id ASC"
@@ -74,7 +82,7 @@ def run_crawl(db_path: Path, sources: list[str], limit_companies: int | None = N
                         """
                         INSERT INTO company_movements (
                             company_id, title, summary, category, impact, event_date, source_name, source_url, is_verified
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
                         """,
                         (
                             mov.company_id,
@@ -117,9 +125,25 @@ def run_crawl(db_path: Path, sources: list[str], limit_companies: int | None = N
             finish_crawl_run(conn, run_id=run_id, status="FAILED", error_message=str(exc))
             summaries.append({"run_id": run_id, "source": src_name, "status": "FAILED", "error": str(exc)})
 
-    recompute_latest_snapshots(conn)
+    if rebuild_history:
+        rebuild_snapshots_from_live_jobs(conn)
+    else:
+        recompute_latest_snapshots(conn)
     conn.close()
     return summaries
+
+
+def init_live_database(db_path: Path, sources: list[str]) -> list[dict]:
+    """Wipe all seeded records, load the 30 real VN watchlist companies, and crawl 100% live data."""
+    conn = get_connection(db_path)
+    init_db(conn)
+    for tbl in ("crawl_runs", "company_movements", "candidate_moves", "hiring_snapshots", "job_postings", "companies"):
+        conn.execute(f"DELETE FROM {tbl}")
+    for comp in VIETNAM_WATCHLIST:
+        upsert_company(conn, comp)
+    conn.commit()
+    conn.close()
+    return run_crawl(db_path, sources, rebuild_history=True)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -129,6 +153,13 @@ def main(argv: list[str] | None = None) -> int:
 
     p_seed = sub.add_parser("seed", help="Seed Vietnam Top 30 Tech/CFC/Banking baseline data")
     p_seed.add_argument("--reset", action="store_true", help="Clear existing data before seeding")
+
+    p_live = sub.add_parser("init-live", help="Wipe seed data and populate 100% live-crawled Vietnam market data")
+    p_live.add_argument(
+        "--source",
+        default="vietnamworks,topdev,careerviet,vn_news_rss,itviec",
+        help="Comma-separated live sources to crawl",
+    )
 
     p_crawl = sub.add_parser("crawl", help="Run live crawlers for one or more sources")
     p_crawl.add_argument(
@@ -152,10 +183,16 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(result, indent=2))
         return 0
 
+    if args.command == "init-live":
+        sources = [s.strip() for s in args.source.split(",") if s.strip()]
+        result = init_live_database(args.db, sources)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return 0
+
     if args.command == "crawl":
         sources = list(SOURCE_REGISTRY.keys()) if args.source == "all" else [s.strip() for s in args.source.split(",") if s.strip()]
         result = run_crawl(args.db, sources, limit_companies=args.limit)
-        print(json.dumps(result, indent=2))
+        print(json.dumps(result, indent=2, ensure_ascii=False))
         return 0
 
     if args.command == "import-moves":
