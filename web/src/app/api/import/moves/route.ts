@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { getDbPath } from "@/lib/db";
+import { getRepoRoot, resolvePythonBin } from "@/lib/python";
 
 const execFileAsync = promisify(execFile);
 
@@ -20,9 +21,8 @@ export async function POST(req: NextRequest) {
     fs.writeFileSync(tmpFile, csvText, "utf-8");
 
     try {
-      const repoRoot = path.resolve(process.cwd(), "..");
-      const venvPython = path.join(repoRoot, ".venv", "bin", "python");
-      const pythonBin = fs.existsSync(venvPython) ? venvPython : "python3";
+      const repoRoot = getRepoRoot();
+      const pythonBin = resolvePythonBin(repoRoot);
       const crawlerDir = path.join(repoRoot, "crawler");
       const dbPath = getDbPath();
 

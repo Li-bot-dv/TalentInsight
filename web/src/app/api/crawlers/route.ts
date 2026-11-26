@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { execFile } from "node:child_process";
-import fs from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
 import { getCrawlerStatus, getDbPath } from "@/lib/db";
+import { getRepoRoot, resolvePythonBin } from "@/lib/python";
 
 const execFileAsync = promisify(execFile);
 
@@ -32,9 +32,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Unsupported crawler source: ${source}` }, { status: 400 });
     }
 
-    const repoRoot = path.resolve(process.cwd(), "..");
-    const venvPython = path.join(repoRoot, ".venv", "bin", "python");
-    const pythonBin = fs.existsSync(venvPython) ? venvPython : "python3";
+    const repoRoot = getRepoRoot();
+    const pythonBin = resolvePythonBin(repoRoot);
     const crawlerDir = path.join(repoRoot, "crawler");
     const dbPath = getDbPath();
 

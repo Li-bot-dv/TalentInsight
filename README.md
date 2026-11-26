@@ -1,60 +1,79 @@
 # TalentInsight Vietnam
 
-Market & talent intelligence platform focused on **Vietnam's Tech, Consumer Finance (CFC), and Commercial Banking** landscape.
+Local-first market & talent intelligence platform focused on **Vietnam's Tech, Consumer Finance (CFC), and Commercial Banking** sectors.
 
-## Core Intelligence Modules
+## Run Locally (1-Command Setup)
 
-1. **Market Pulse Overview (`/`)**: Executive KPIs, 16-week multi-sector hiring volume trend, sector scorecard (Tech vs. CFC vs. Banking), hiring boost leaders vs. contraction alerts, and high-signal senior openings.
-2. **Hiring Velocity Radar (`/velocity`)**: Sortable WoW & MoM velocity tracker across the curated Top 30 Vietnam employer watchlist with 8-week sparklines, surge/freeze status badges, senior hiring ratios, and net talent flow.
-3. **Senior & Executive Hiring Tracker (`/senior-hiring`)**: Automated EN + Vietnamese job title classifier detecting C-Level, VP, Director/Head, Principal/Staff, and Senior Manager openings across HCMC, Hanoi, and Da Nang with VND salary bands.
-4. **Candidate Inflow–Outflow & Talent Migration (`/talent-flow`)**: Interactive cross-sector SVG flow diagram, Net Talent Gain/Loss leaderboard, company-to-company poaching corridors, and **CSV Import** for headhunter / LinkedIn Talent Insights exports.
-5. **Company Movement Feed (`/movements`)**: Curated + RSS-ingested signals covering leadership appointments, new tech hubs, restructuring/layoffs, M&A transitions, and hiring drives, plus analyst field-intel note logging.
-6. **Watchlist & Crawler Console (`/crawlers`)**: Editable employer watchlist (add/remove companies, configure career portals/ATS) + on-demand crawler triggers and transparent run audit logs.
-7. **Company Deep-Dive (`/companies/[slug]`)**: Per-company 16-week trajectory chart, function mix, top inflow sources vs. outflow destinations, movement timeline, and active roles.
+### Prerequisites
+- **Node.js 22+** (uses built-in `node:sqlite`, zero native compilation required)
+- **Python 3.10+**
 
-## Architecture
-
-- **`web/`** — Next.js (App Router, TypeScript, Tailwind CSS, Recharts) using Node 22's built-in `node:sqlite` (`DatabaseSync`).
-- **`crawler/`** — Python 3.12 modular crawler engine (`httpx`, `beautifulsoup4`, `lxml`, `feedparser`) with adapters for:
-  - Public Vietnam job boards: **TopDev**, **VietnamWorks**, **ITviec**, **CareerViet**
-  - Direct Company Career Sites / ATS: **Greenhouse**, **Lever**, and JSON-LD / HTML career pages
-  - Vietnam Business/Tech News RSS: **VnExpress Kinh Doanh / Số Hóa**, **CafeF Tài chính – Ngân hàng**
-- **`data/`** — Shared SQLite database (`data/talent_insight.db`, WAL mode) with PostgreSQL-ready `data/schema.sql` and `data/sample_candidate_moves.csv`.
-
-## Quick Start
-
-### 1. Python Crawler & Seed Database
-
+### Option A: macOS / Linux
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -r crawler/requirements.txt
-
-# Populate 100% LIVE-crawled Vietnam jobs & news movements (VietnamWorks, TopDev, CareerViet, VN News RSS)
-PYTHONPATH=crawler .venv/bin/python -m talent_crawler.cli init-live
-
-# Or seed a 16-week demo baseline (optional)
-PYTHONPATH=crawler .venv/bin/python -m talent_crawler.cli seed --reset
-
-# Run unit tests
-PYTHONPATH=crawler .venv/bin/pytest -v crawler/tests
+git clone https://github.com/Li-bot-dv/TalentInsight.git
+cd TalentInsight
+chmod +x start.sh
+./start.sh
 ```
 
-### 2. Run Live Crawlers or Import Candidate Moves CSV
+### Option B: Windows (PowerShell or Double-Click)
+```powershell
+git clone https://github.com/Li-bot-dv/TalentInsight.git
+cd TalentInsight
+.\start.ps1
+```
+*(Or simply double-click `start.bat` in File Explorer.)*
+
+What the launcher does automatically on first run:
+1. Creates a local Python `.venv` and installs `crawler/requirements.txt`.
+2. Installs Next.js dependencies in `web/`.
+3. Runs a **100% live crawl** across Vietnam job boards, direct company career sites/ATS, and Vietnam finance/tech RSS feeds into `data/talent_insight.db` (falls back to `seed` if offline).
+4. Starts the web app on port `3000`.
+
+### Option C: Docker (No local Node/Python needed)
+```bash
+git clone https://github.com/Li-bot-dv/TalentInsight.git
+cd TalentInsight
+docker compose up --build
+```
+
+---
+
+## Core Modules
+
+1. **Market Pulse Overview (`/`)**: KPIs, cumulative live hiring pipeline by sector, hiring velocity leaders & slowdowns, and high-signal senior openings.
+2. **Hiring Velocity Radar (`/velocity`)**: Sortable WoW & 2-week posting momentum across the curated Top 30 Vietnam employer watchlist with sparklines and senior ratios.
+3. **Senior & Executive Hiring Tracker (`/senior-hiring`)**: Automated EN + Vietnamese classifier detecting C-Level, VP, Director/Head, Principal/Staff, and Senior Manager (*Giám đốc*, *Trưởng phòng*, *Phó Tổng Giám đốc*) openings with direct source links.
+4. **Candidate Inflow–Outflow & Talent Migration (`/talent-flow`)**: Cross-sector migration diagram, Net Gain/Loss leaderboard, company-to-company corridors, and **CSV Import** for LinkedIn Talent Insights / headhunter move logs.
+5. **Company Movement Feed (`/movements`)**: Live Vietnam news signals (VnExpress, CafeF, CafeBiz, Google News VN) + analyst note logging.
+6. **Watchlist & Crawler Console (`/crawlers`)**: Add/remove Vietnam employers, trigger live crawlers on demand from the UI, and view transparent crawl audit logs.
+7. **Company Deep-Dive (`/companies/[slug]`)**: Per-company hiring trajectory, function mix, inflow/outflow partners, movement timeline, and active roles.
+
+---
+
+## Live Data Sources
+
+- **Direct Company Career Sites / ATS (`company_ats`)**: Bosch Global Software Vietnam (SmartRecruiters API), Grab Vietnam (SmartRecruiters API), VNG Corporation (`career.vng.com.vn`), plus any Greenhouse / Lever / SmartRecruiters board you add.
+- **Public Vietnam Job Boards**: CareerViet, VietnamWorks, CareerLink VN, TopDev. *(Sites gated by Cloudflare/anti-bot such as ITviec are logged transparently as `BLOCKED_ANTIBOT` without bypass attempts.)*
+- **Vietnam Business & Tech News RSS (`vn_news_rss`)**: VnExpress Kinh Doanh, VnExpress Khoa học Công nghệ, CafeF Tài chính – Ngân hàng, CafeBiz Công nghệ, and Google News VN RSS.
+
+---
+
+## Useful Local Commands
 
 ```bash
-# Run specific source(s) or 'all'
-PYTHONPATH=crawler .venv/bin/python -m talent_crawler.cli crawl --source topdev,vietnamworks,vn_news_rss --limit 10
+# Refresh live data anytime (appends new jobs/news & updates snapshots)
+npm run crawl:update
 
-# Import candidate inflow-outflow transitions from CSV
+# Wipe DB & run a fresh 100% live crawl from scratch
+npm run crawl:live
+
+# Optional: load a 16-week demo dataset (including sample candidate inflow-outflow)
+npm run seed
+
+# Import your own candidate inflow-outflow CSV
 PYTHONPATH=crawler .venv/bin/python -m talent_crawler.cli import-moves --file data/sample_candidate_moves.csv
-```
 
-> **Note on anti-bot gates:** All crawler adapters use polite rate limits and transparently detect HTTP 403 / Cloudflare / CAPTCHA challenges (logging `BLOCKED_ANTIBOT` in `crawl_runs`) without attempting to bypass access controls.
-
-### 3. Run the Next.js Web Application
-
-```bash
-cd web
-npm install
-npm run dev
+# Run crawler unit tests
+npm run test:crawler
 ```
