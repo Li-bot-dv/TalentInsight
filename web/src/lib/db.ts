@@ -42,6 +42,10 @@ export function getLatestSnapshotWeek(): string {
   return row?.w ?? "";
 }
 
+export function toPlain<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
 export function getCompaniesVelocity(options?: {
   sector?: string;
   status?: string;
